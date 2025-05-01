@@ -1,0 +1,56 @@
+Create Book Collection with (Title, Author_name, Borrowed_status) as fields. Write Map Reduce Functions for
+following requirements.
+1. Display Author wise list of books.
+2. Display Author wise list of books having Borrowed status as “True”.
+3. Display Author wise list of books having price greater than 300
+
+db.createCollection("Book");
+
+db.Book.insertMany([
+  { Title: "The Catcher in the Rye", Author_name: "J.D. Salinger", Borrowed_status: true, Price: 250 },
+  { Title: "To Kill a Mockingbird", Author_name: "Harper Lee", Borrowed_status: false, Price: 400 },
+  { Title: "1984", Author_name: "George Orwell", Borrowed_status: true, Price: 350 },
+  { Title: "Moby Dick", Author_name: "Herman Melville", Borrowed_status: false, Price: 200 },
+  { Title: "War and Peace", Author_name: "Leo Tolstoy", Borrowed_status: true, Price: 500 },
+  { Title: "Pride and Prejudice", Author_name: "Jane Austen", Borrowed_status: false, Price: 150 },
+  { Title: "The Great Gatsby", Author_name: "F. Scott Fitzgerald", Borrowed_status: true, Price: 350 },
+  { Title: "Brave New World", Author_name: "Aldous Huxley", Borrowed_status: true, Price: 320 },
+  { Title: "The Hobbit", Author_name: "J.R.R. Tolkien", Borrowed_status: false, Price: 400 },
+  { Title: "The Odyssey", Author_name: "Homer", Borrowed_status: true, Price: 380 }
+]);
+
+
+✅ 1. Author-wise list of books
+
+db.Book.aggregate([
+  {
+    $group: {
+      _id: "$Author_name",
+      books: { $push: "$Title" }
+    }
+  }
+]);
+
+✅ 2. Author-wise list of borrowed books
+
+db.Book.aggregate([
+  { $match: { Borrowed_status: true } },
+  {
+    $group: {
+      _id: "$Author_name",
+      borrowed_books: { $push: "$Title" }
+    }
+  }
+]);
+
+✅ 3. Author-wise list of books with price > 300
+
+db.Book.aggregate([
+  { $match: { Price: { $gt: 300 } } },
+  {
+    $group: {
+      _id: "$Author_name",
+      expensive_books: { $push: "$Title" }
+    }
+  }
+]);

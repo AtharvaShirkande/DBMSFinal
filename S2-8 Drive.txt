@@ -1,0 +1,86 @@
+create Database db1;
+use db1;
+
+CREATE TABLE Manager (
+        Manager_id INT PRIMARY KEY,
+        Manager_name VARCHAR(50));
+
+CREATE TABLE Locations (
+         Location_id INT PRIMARY KEY,
+         Street_address VARCHAR(100),
+         Postal_code VARCHAR(20),
+         City VARCHAR(50),
+         State VARCHAR(50),
+         Country_id CHAR(2)
+     );
+
+mysql> CREATE TABLE Departments (
+         Department_id INT PRIMARY KEY,
+         Department_name VARCHAR(50),
+         Manager_id INT,
+         Location_id INT,
+         FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id),
+         FOREIGN KEY (Location_id) REFERENCES Locations(Location_id)
+     );
+
+CREATE TABLE Employee (
+         Employee_id INT PRIMARY KEY,
+         First_name VARCHAR(50),
+         Last_name VARCHAR(50),
+         Hire_date DATE,
+         Salary DECIMAL(10, 2),
+         Job_title VARCHAR(50),
+         Manager_id INT,
+         Department_id INT,
+         FOREIGN KEY (Manager_id) REFERENCES Manager(Manager_id),
+         FOREIGN KEY (Department_id) REFERENCES Departments(Department_id) );
+
+show tables;
+
+INSERT INTO Manager (Manager_id, Manager_name) VALUES
+(1, 'Amit Sharma'),
+(2, 'Priya Singh'),
+(3, 'Rajesh Patel');
+
+INSERT INTO Locations (Location_id, Street_address, Postal_code, City, State, Country_id) VALUES
+     (1, '15 MG Road', '110001', 'New Delhi', 'Delhi', 'IN'),
+     (2, '22 Bhopal Road', '452010', 'Bhopal', 'Madhya Pradesh', 'IN'),
+     (3, '45 Juhu Beach', '400049', 'Mumbai', 'Maharashtra', 'IN');
+
+INSERT INTO Departments (Department_id, Department_name, Manager_id, Location_id) VALUES
+     (1, 'Software Development', 1, 1),
+     (2, 'Human Resources', 2, 2),
+     (3, 'Sales and Marketing', 3, 3);
+
+INSERT INTO Employee (Employee_id, First_name, Last_name, Hire_date, Salary, Job_title, Manager_id, Department_id) VALUES
+    (1, 'Ravi', 'Kumar', '2020-01-15', 75000, 'Software Engineer', 1, 1),
+    (2, 'Neha', 'Singh', '2021-02-20', 80000, 'HR Manager', 2, 2),
+    (3, 'Amit', 'Verma', '2019-05-25', 95000, 'HR Specialist', 2, 2),
+    (4, 'Vikram', 'Sharma', '2020-06-10', 72000, 'Junior Developer', 1, 1),
+    (5, 'Anjali', 'Patel', '2021-03-18', 110000, 'Senior Engineer', 1, 1),
+    (6, 'Rohit', 'Joshi', '2018-07-02', 86000, 'Product Marketing Manager', 3, 3);
+
+SELECT * FROM Employee;
+
+SELECT First_name, Last_name, Salary
+    FROM Employee
+    WHERE Salary > (SELECT Salary FROM Employee WHERE Last_name = 'Singh');
+
+SELECT E.First_name, E.Last_name
+    FROM Employee E
+    JOIN Departments D ON E.Department_id = D.Department_id
+    JOIN Locations L ON D.Location_id = L.Location_id
+    WHERE E.Manager_id IS NOT NULL
+    AND L.Country_id = 'IN';
+
+SELECT First_name, Last_name, Salary
+    FROM Employee
+    WHERE Salary > (SELECT AVG(Salary) FROM Employee);
+
+SELECT E.Employee_id, E.Last_name AS Employee_Last_name, E.Manager_id, M.Manager_name AS Manager_Last_name
+    FROM Employee E
+    JOIN Manager M ON E.Manager_id = M.Manager_id;
+
+SELECT First_name, Last_name, Hire_date
+    FROM Employee
+    WHERE Hire_date > (SELECT Hire_date FROM Employee WHERE Last_name = 'Singh');
